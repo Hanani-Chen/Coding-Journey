@@ -33,44 +33,24 @@ class MedianFinder {
     public MedianFinder() {
         left = new PriorityQueue<>(Comparator.reverseOrder());
         right = new PriorityQueue<>();
-
     }
 
     public void addNum(int num) {
-        int size = left.size();
-        int size1 = right.size();
-        if (size1 == size) {
-            left.add(num);
-        }else {
+        if (left.size() == right.size()) {
             right.add(num);
-        }
-        Integer big = left.peek();
-        Integer small = right.peek();
-        if (null == big || null == small) {
-            return;
-        }
-        if (big > small) {
-            left.poll();
-            right.poll();
-            right.add(big);
-            left.add(small);
+            left.add(right.poll());
+        }else {
+            left.add(num);
+            right.add(left.poll());
         }
     }
 
     public double findMedian() {
-        int size = left.size();
-        int size1 = right.size();
         Integer left1 = left.peek();
         Integer right1 = right.peek();
-        if (left1 == null) {
-            return 0;
-        }
-        if (right1 == null) {
-            return left1;
-        }
-        if (size1 == size) {
+        if (left.size() == right.size()) {
             return (left1 + right1) /2.0;
-        }else {
+        } else {
             return left1;
         }
     }
