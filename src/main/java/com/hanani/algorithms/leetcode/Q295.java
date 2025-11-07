@@ -54,4 +54,15 @@ class MedianFinder {
             return left1;
         }
     }
+
+    public void delete(int num) {
+        if (left.contains(num)) {
+            left.remove(num);
+        } else {
+            right.remove(num);
+        }
+        if (left.size() < right.size()) {
+            left.add(right.poll());
+        }
+    }
 }
