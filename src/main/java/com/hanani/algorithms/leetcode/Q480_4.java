@@ -1,16 +1,86 @@
-package com.hanani.algorithms.data_structure;
+package com.hanani.algorithms.leetcode;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
-/**
- * Represents an AVL Tree, a self-balancing binary search tree.
- * In an AVL tree, the heights of the two child subtrees of any node
- * differ by at most one. If they differ by more than one at any time,
- * rebalancing is performed to restore this property.
- */
-public class AVLTree<T> {
+//https://leetcode.cn/problems/sliding-window-median/description/
+public class Q480_4 {
+    //ms = [1,3,-1,-3,5,3,6,7]，以及 k = 3。
+//    [1,-1,-1,3,5,6]。2147483647,2147483647
+    public static void main(String[] args) {
+        Solution2 solution = new Solution2();
+//        double[] doubles = solution2.medianSlidingWindow(new int[]{1, 3, -1, -3, 5, 3, 6, 7}, 3);
+        double[] doubles = solution.medianSlidingWindow(new int[]{2147483647, 2147483647}, 2);
+        System.out.println(Arrays.toString(doubles));
+
+    }
+
+}
+
+class Solution2 {
+    private AVLTree<Long> left = new AVLTree<>(Comparator.reverseOrder());
+    private AVLTree<Long> right = new AVLTree<>();
+
+    public void addNum(int num) {
+        if (left.size() == right.size()) {
+            right.insert((long) num);
+            Long top = right.getMax();
+            right.delete(top);
+            left.insert(top);
+        }else {
+            left.insert((long) num);
+            Long top = left.getMax();
+            left.delete(top);
+            right.insert(top);
+        }
+    }
+
+    public double findMedian() {
+        Long left1 = left.getMax();
+        Long right1 = right.getMax();
+        if (left1 == null) {
+            left1 = 0L;
+        }
+        if (right1 == null) {
+            right1 = 0L;
+        }
+        if (left.size() == right.size()) {
+            return (left1 + right1) /2.0;
+        } else {
+            return left1;
+        }
+    }
+
+    public void delete(int num) {
+        if (left.search((long)num)) {
+            left.delete((long)num);
+        } else {
+            right.delete((long)num);
+        }
+        if (left.size() < right.size()) {
+            Long top = right.getMax();
+            right.delete(top);
+            left.insert(top);
+        }
+    }
+    public double[] medianSlidingWindow(int[] nums, int k) {
+        double[] doubles = new double[nums.length - k + 1];
+        for (int i = 0; i < k; i++) {
+            addNum(nums[i]);
+        }
+        doubles[0] = findMedian();
+        for (int i = 0; i < nums.length - k; i++) {
+            int removeIndex = i;
+            int addIndex = i + k;
+            delete(nums[removeIndex]);
+            addNum(nums[addIndex]);
+            doubles[i+1] = findMedian();
+        }
+        return doubles;
+    }
+
+}
+
+class AVLTree<T> {
 
     private Node<T> root;
     private int size;
@@ -189,7 +259,7 @@ public class AVLTree<T> {
         int cmp = compare(leftmost.key, rightmost.key);
         return cmp < 0; // 如果最左 < 最右，则是自然顺序
     }
-
+    
     /**
      * Inserts a new key into the AVL tree.
      *
